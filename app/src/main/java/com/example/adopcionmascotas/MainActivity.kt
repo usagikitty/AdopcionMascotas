@@ -4,14 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
 import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.adopcionmascotas.ui.auth.LoginScreen
 import com.example.adopcionmascotas.ui.pets.PetListScreen
 import com.example.adopcionmascotas.ui.pets.PetViewModel
 import com.example.adopcionmascotas.ui.theme.AdopcionMascotasTheme
@@ -26,10 +27,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        val viewModel: PetViewModel = viewModel()
-                        Column(modifier = Modifier.padding(innerPadding)) {
-                            PetListScreen(viewModel = viewModel)
+                    val navController = rememberNavController()
+                    val petViewModel: PetViewModel = viewModel()
+
+                    NavHost(navController = navController, startDestination = "login") {
+                        composable("login") {
+                            LoginScreen(onLoginSuccess = {
+                                navController.navigate("pet_list") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            })
+                        }
+                        composable("pet_list") {
+                            PetListScreen(
+                                viewModel = petViewModel,
+                                onPetClick = { /* Ir a detalle */ },
+                                onAddPetClick = { /* Ir a agregar */ }
+                            )
                         }
                     }
                 }

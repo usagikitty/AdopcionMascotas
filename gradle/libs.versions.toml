@@ -11,9 +11,12 @@ lifecycleViewmodelCompose = "2.6.1"
 retrofit = "2.9.0"
 gson = "2.10.1"
 coil = "2.4.0"
+navigationCompose = "2.7.4"
 composeBom = "2026.02.01"
 
 [libraries]
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
