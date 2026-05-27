@@ -1,8 +1,8 @@
 package com.example.adopcionmascotas.data.repository
 
 import android.util.Log
-import com.example.adopcionmascotas.data.remote.PetApiService
-import com.example.adopcionmascotas.data.remote.dto.toPet
+import com.example.adopcionmascotas.data.remote.api.PetApiService
+import com.example.adopcionmascotas.data.mapper.toPet
 import com.example.adopcionmascotas.domain.model.Pet
 import com.example.adopcionmascotas.domain.repository.PetRepository
 import retrofit2.Retrofit
