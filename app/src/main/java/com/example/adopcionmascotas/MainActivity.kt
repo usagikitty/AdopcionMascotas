@@ -7,14 +7,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.adopcionmascotas.presentation.screens.LoginScreen
-import com.example.adopcionmascotas.presentation.screens.PetListScreen
-import com.example.adopcionmascotas.presentation.viewmodel.PetViewModel
+import androidx.navigation.navArgument
+import com.example.adopcionmascotas.presentation.screens.*
+import com.example.adopcionmascotas.presentation.viewmodel.*
 import com.example.adopcionmascotas.presentation.theme.AdopcionMascotasTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,20 +31,65 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     val petViewModel: PetViewModel = viewModel()
+                    val authViewModel: AuthViewModel = viewModel()
 
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") {
-                            LoginScreen(onLoginSuccess = {
-                                navController.navigate("pet_list") {
-                                    popUpTo("login") { inclusive = true }
+                            LoginScreen(
+                                viewModel = authViewModel,
+                                onLoginSuccess = {
+                                    navController.navigate("main") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                },
+                                onRegisterClick = {
+                                    navController.navigate("register")
                                 }
-                            })
+                            )
                         }
-                        composable("pet_list") {
-                            PetListScreen(
+                        composable("register") {
+                            RegisterScreen(
+                                viewModel = authViewModel,
+                                onRegisterSuccess = {
+                                    navController.popBackStack()
+                                },
+                                onBackToLogin = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        }
+                        composable("main") {
+                            MainScreen(
+                                petViewModel = petViewModel,
+                                authViewModel = authViewModel,
+                                onLogout = {
+                                    navController.navigate("login") {
+                                        popUpTo("main") { inclusive = true }
+                                    }
+                                },
+                                onAddPetClick = {
+                                    navController.navigate("add_edit_pet")
+                                }
+                            )
+                        }
+                        composable(
+                            "add_edit_pet?petId={petId}",
+                            arguments = listOf(
+                                navArgument("petId") {
+                                    type = NavType.LongType
+                                    defaultValue = -1L
+                                }
+                            )
+                        ) { backStackEntry ->
+                            val petId = backStackEntry.arguments?.getLong("petId") ?: -1L
+                            val pet = if (petId != -1L) {
+                                petViewModel.pets.collectAsState().value.find { it.id == petId }
+                            } else null
+                            
+                            AddEditPetScreen(
                                 viewModel = petViewModel,
-                                onPetClick = { /* Ir a detalle */ },
-                                onAddPetClick = { /* Ir a agregar */ }
+                                pet = pet,
+                                onNavigateBack = { navController.popBackStack() }
                             )
                         }
                     }
